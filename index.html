@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mystery and Emtpy Machine</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#ececec;
+}
+
+h2{
+    text-align:center;
+}
+
+.container{
+    display:flex;
+    justify-content:center;
+    gap:80px;
+    margin-top:20px;
+}
+
+.machine{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.io{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin:0;
+    gap:10px;
+}
+
+.io input{
+    width:80px;
+    height:55px;
+    box-sizing:border-box;
+    text-align:center;
+    font-size:20px;
+    background:white;
+    border:2px solid #9aa7b5;
+    border-radius:10px;
+}
+
+.stepBtn{
+    width:36px;
+    height:36px;
+    flex:0 0 36px;
+    border-radius:50%;
+    border:none;
+    background:#4a4a4a;
+    color:white;
+    font-size:0;
+    padding:0;
+    margin:0;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.stepBtn svg{
+    width:14px;
+    height:14px;
+    fill:white;
+}
+
+.stepBtn:hover{
+    background:#333333;
+}
+
+.stepBtn:active{
+    background:#1f1f1f;
+}
+
+.pipe{
+    width:20px;
+    height:20px;
+    background:black;
+}
+
+.slot{
+    width:180px;
+    height:80px;
+    border:3px solid black;
+    background:#e8e3d8;
+    margin:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:35px;
+}
+
+.hiddenSlot{
+    background:#333;
+    color:white;
+    font-size:60px;
+}
+
+.blocks{
+    display:grid;
+    grid-template-columns:repeat(2,180px);
+    gap:20px;
+}
+
+.block{
+    height:80px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:40px;
+    cursor:grab;
+    user-select:none;
+    border:2px solid white;
+}
+
+.red{background:#ff3131;}
+.orange{background:#ff914d;}
+.yellow{background:#ffe066;}
+.green{background:#7ed957;}
+.purple{background:#b864d8;}
+.cyan{background:#60cbd2;}
+.blue{background:#5670e7;}
+.gray{background:#b9b9b9;}
+.pink{background:#ef57b8;}
+
+.controls{
+    text-align:center;
+    margin-top:25px;
+}
+
+button{
+    padding:10px 25px;
+    font-size:20px;
+    margin:5px;
+}
+
+.machine button{
+    margin-top:20px;
+}
+
+#answer{
+    background:black;
+    color:white;
+}
+
+.correct{
+    border:4px solid lime;
+}
+
+.note{
+    text-align:center;
+    color:#555;
+    font-size:14px;
+    margin-top:-10px;
+}
+</style>
+</head>
+<body>
+
+<h2>Mystery and Emtpy Machine</h2> <p class="note">Arrange the blocks on the Empty Machine with the right order. Then, the answer button will work.</p><p class="note">Wait, why is a mystery machine here? Could it mean something?</p>
+
+<div class="container">
+
+<!-- LEFT MACHINE -->
+
+<div class="machine">
+
+<div class="io">
+        <button type="button" class="stepBtn" onclick="stepInput('inputValue',-1)" aria-label="decrease"><svg viewBox="0 0 10 10"><polygon points="7,1 7,9 1,5"/></svg></button>
+        <input id="inputValue" type="number" value="5">
+        <button type="button" class="stepBtn" onclick="stepInput('inputValue',1)" aria-label="increase"><svg viewBox="0 0 10 10"><polygon points="3,1 3,9 9,5"/></svg></button>
+</div>
+
+<div class="pipe"></div>
+
+<div class="slot hiddenSlot">?</div>
+<div class="pipe"></div>
+
+<div class="slot hiddenSlot">?</div>
+<div class="pipe"></div>
+
+<div class="slot hiddenSlot">?</div>
+<div class="pipe"></div>
+
+<div class="slot hiddenSlot">?</div>
+<div class="pipe"></div>
+
+<div class="slot hiddenSlot">?</div>
+
+<div class="pipe"></div>
+
+<div class="io">
+<div id="mysteryOutput" style="font-size:25px;background-color:#b9b9b9; border-radius: 5px; width: 100px; height: 40px; text-align: center;padding-top: 10px;"></div>
+</div>
+
+<button onclick="runMystery()">Run Mystery</button>
+
+</div>
+
+<!-- RIGHT MACHINE -->
+
+<div class="machine">
+
+<div class="io">
+<button type="button" class="stepBtn" onclick="stepInput('playerInputValue',-1)" aria-label="decrease"><svg viewBox="0 0 10 10"><polygon points="7,1 7,9 1,5"/></svg></button>
+<input id="playerInputValue" type="number" value="5">
+<button type="button" class="stepBtn" onclick="stepInput('playerInputValue',1)" aria-label="increase"><svg viewBox="0 0 10 10"><polygon points="3,1 3,9 9,5"/></svg></button>
+</div>
+
+<div class="pipe"></div>
+
+<div class="slot" data-slot="0"></div>
+<div class="pipe"></div>
+
+<div class="slot" data-slot="1"></div>
+<div class="pipe"></div>
+
+<div class="slot" data-slot="2"></div>
+<div class="pipe"></div>
+
+<div class="slot" data-slot="3"></div>
+<div class="pipe"></div>
+
+<div class="slot" data-slot="4"></div>
+
+<div class="pipe"></div>
+
+<div class="io">
+<div id="playerOutput"  style="font-size:25px;background-color:#b9b9b9; border-radius: 5px; width: 100px; height: 40px; text-align: center;padding-top: 10px;"></div>
+</div>
+
+<button onclick="runPlayer()">Run Player</button>
+
+</div>
+
+<!-- BLOCKS -->
+
+<div class="blocks">
+
+<div class="block red" draggable="true" data-op="+4" data-color="red">+4</div>
+<div class="block gray" draggable="true" data-op="/2" data-color="gray">&lfloor;/2&rfloor;</div>
+
+<div class="block purple" draggable="true" data-op="-5" data-color="purple">-5</div>
+<div class="block orange" draggable="true" data-op="-1" data-color="orange">-1</div>
+
+<div class="block cyan" draggable="true" data-op="&7" data-color="cyan">&7</div>
+<div class="block blue" draggable="true" data-op="+6" data-color="blue">+6</div>
+
+<div class="block yellow" draggable="true" data-op="|8" data-color="yellow">|8</div>
+<div class="block pink" draggable="true" data-op="^9" data-color="pink">^9</div>
+
+<div class="block green" draggable="true" data-op="*3" data-color="green">*3</div>
+
+</div>
+
+</div>
+
+<div class="controls">
+
+<button onclick="resetMachine()">Reset</button>
+
+<button id="answer" disabled>ANSWER</button>
+
+</div>
+
+<script>
+
+const SECRET_HASH = "8c232e0fc925fca964e7b1b9e7d3c41a248dea009b43b59e7f80d792619d6d0b";
+
+const CIPHERTEXT_B64 = "GFMQIC/Rvyo7lNbtc7CdXcOzbpFuZuJJwxbKT616bSF+S33wmJg5bVgK";
+const IV_B64 = "OT96/8RnM/VE3th+";
+
+function b64ToBytes(b64){
+  return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+}
+
+function stepInput(id, delta){
+  const el = document.getElementById(id);
+  const current = parseInt(el.value);
+  el.value = (isNaN(current) ? 0 : current) + delta;
+}
+
+async function deriveKey(sequenceStr){
+  const keyMaterial = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(sequenceStr));
+  return crypto.subtle.importKey("raw", keyMaterial, "AES-GCM", false, ["decrypt"]);
+}
+
+async function tryRevealFlag(playerArr){
+  try{
+    const key = await deriveKey(playerArr.join(","));
+    const iv = b64ToBytes(IV_B64);
+    const ciphertext = b64ToBytes(CIPHERTEXT_B64);
+    const plainBuf = await crypto.subtle.decrypt({name:"AES-GCM", iv}, key, ciphertext);
+    return new TextDecoder().decode(plainBuf);
+  }catch(e){
+    return null; // wrong sequence → decryption fails, no flag
+  }
+}
+
+async function hashSequence(arr){
+  const enc = new TextEncoder().encode(arr.join(","));
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+
+document.getElementById("answer").addEventListener("click", async ()=>{
+  const playerArr = Array.from(slots).map(s=>s.dataset.value || "");
+  const flag = await tryRevealFlag(playerArr);
+  alert(flag ?? "Something went wrong — try re-checking your sequence.");
+});
+
+function applyOp(x,op){
+
+switch(op){
+
+case "+4": return x+4;
+
+case "-1": return x-1;
+
+case "-5": return x-5;
+
+case "+6": return x+6;
+
+case "*3": return x*3;
+
+case "/2": return Math.floor(x/2);
+
+case "&7": return x&7;
+
+case "|8": return x|8;
+
+case "^9": return x^9;
+
+}
+
+return x;
+
+}
+
+const encodedOps = "WyIrNCIsIi8yIiwifDgiLCItNSIsIiozIl0=";
+
+function getMysteryOps(){
+  return JSON.parse(atob(encodedOps));
+}
+
+function mysteryResult(x){
+  for(const op of getMysteryOps())
+    x=applyOp(x,op);
+  return x;
+}
+
+const slots=document.querySelectorAll(".slot[data-slot]");
+const blocks=document.querySelectorAll(".block");
+
+blocks.forEach(block=>{
+
+block.addEventListener("dragstart",e=>{
+
+e.dataTransfer.setData("text",block.dataset.op);
+e.dataTransfer.setData("color",block.dataset.color);
+
+});
+
+});
+
+slots.forEach(slot=>{
+
+slot.addEventListener("dragover",e=>e.preventDefault());
+
+slot.addEventListener("drop",e=>{
+
+e.preventDefault();
+
+const op=e.dataTransfer.getData("text");
+const color=e.dataTransfer.getData("color");
+
+slot.textContent=op;
+slot.dataset.value=op;
+
+slot.classList.remove("red","orange","yellow","green","purple","cyan","blue","gray","pink");
+if(color)
+slot.classList.add(color);
+
+});
+
+});
+
+function playerResult(x){
+
+slots.forEach(slot=>{
+
+if(slot.dataset.value)
+x=applyOp(x,slot.dataset.value);
+
+});
+
+return x;
+
+}
+
+// Left machine: has its own input and its own Run button.
+// Pressing it only touches the mystery machine's own output.
+function runMystery(){
+
+let value=parseInt(document.getElementById("inputValue").value);
+
+if(isNaN(value)){
+    alert("Please enter a valid number.");
+    return;
+}
+
+let mystery=mysteryResult(value);
+
+document.getElementById("mysteryOutput").innerHTML=mystery;
+
+}
+
+async function runPlayer(){
+
+let value=parseInt(document.getElementById("playerInputValue").value);
+
+if(isNaN(value)){
+    alert("Please enter a valid number.");
+    return;
+}
+
+let player=playerResult(value);
+
+document.getElementById("playerOutput").innerHTML=player;
+
+const playerArr = Array.from(slots).map(s=>s.dataset.value || "");
+const playerHash = await hashSequence(playerArr);
+const correct = (playerHash === SECRET_HASH);
+
+if(correct){
+
+document.getElementById("answer").disabled=false;
+
+slots.forEach(s=>s.classList.add("correct"));
+
+}else{
+
+document.getElementById("answer").disabled=true;
+
+slots.forEach(s=>s.classList.remove("correct"));
+
+alert("Wrong order!");
+
+}
+
+}
+
+function resetMachine(){
+
+slots.forEach(s=>{
+
+s.textContent="";
+delete s.dataset.value;
+s.classList.remove("correct","red","orange","yellow","green","purple","cyan","blue","gray","pink");
+
+});
+
+document.getElementById("playerOutput").innerHTML="";
+document.getElementById("mysteryOutput").innerHTML="";
+document.getElementById("answer").disabled=true;
+
+}
+
+</script>
+
+</body>
+</html>
